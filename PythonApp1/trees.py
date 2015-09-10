@@ -35,11 +35,37 @@ def splitDataSet(DataSet, axis, value):
             retDataSet.append(VerData)
     return retDataSet;
 
+def chooseBestFeature(DataSet):
+    num = len(DataSet[0]) - 1
+    baseEntropy = calShannonEnt(DataSet)
+    bestInfoGain = 0.0
+    bestFeature = -1
+
+    for i in range(num):
+        featList = [example[i] for example in DataSet]
+        uniqueVal = set(featList)
+        newEntropy = 0.0
+
+        for value in uniqueVal:
+            subDataSet = splitDataSet(DataSet, i,value)
+            p = float(len(subDataSet)) / float(len(DataSet))
+            newEntropy += p * calShannonEnt(subDataSet)
+
+        infoGain = baseEntropy - newEntropy
+        if(infoGain > bestInfoGain):
+            bestInfoGain = infoGain
+            bestFeature = i
+
+    return bestFeature
+
 DataSet = createDataSet()
 print(DataSet)
 
 #ShannonEnt = calShannonEnt(DataSet)
 #print(ShannonEnt)
 
-retDataSet = splitDataSet(DataSet, 0, 1);
-print(retDataSet)
+#retDataSet = splitDataSet(DataSet, 0, 1);
+#print(retDataSet)
+
+bestFeature = chooseBestFeature(DataSet)
+print(bestFeature)
