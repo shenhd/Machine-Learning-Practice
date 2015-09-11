@@ -27,12 +27,18 @@ def createDataSet():
                [0, 1, 'no']]
     return DataSet
 
+def createLabels():
+    Labels = ['A', 'B']
+    return Labels
+
 def splitDataSet(DataSet, axis, value):
     retDataSet = []
 
     for VerData in DataSet:
-        if(VerData[axis] == value):
-            retDataSet.append(VerData)
+        if VerData[axis] == value:
+            reduceFeat = VerData[ : axis]
+            reduceFeat.extend(VerData[axis + 1 : ])
+            retDataSet.append(reduceFeat)
     return retDataSet;
 
 def chooseBestFeature(DataSet):
@@ -58,14 +64,42 @@ def chooseBestFeature(DataSet):
 
     return bestFeature
 
+def createTree(DataSet, Labels):
+    classList = [example[-1] for example in DataSet]
+    if classList.count(classList[0]) == len(classList):
+        return classList[0]
+
+    if len(DataSet[0]) == 1:
+        return classList[0]
+
+    bestFeat = chooseBestFeature(DataSet)
+    bestFeatLabel = Labels[bestFeat]
+    myTree = {bestFeatLabel : {}}
+    del(Labels[bestFeat])
+
+    featVal = [example[bestFeat] for example in DataSet]
+    uniqueVal = set(featVal)
+
+    for value in uniqueVal:
+        subLabels = Labels[ : ]
+        myTree[bestFeatLabel][value] =\
+            createTree(splitDataSet(DataSet, bestFeat, value), subLabels)
+    
+    return myTree
+
 DataSet = createDataSet()
+Labels = createLabels()
 print(DataSet)
+print(Labels)
 
 #ShannonEnt = calShannonEnt(DataSet)
-#print(ShannonEnt)
+#print(ShannonEnt 
 
 #retDataSet = splitDataSet(DataSet, 0, 1);
 #print(retDataSet)
 
-bestFeature = chooseBestFeature(DataSet)
-print(bestFeature)
+#bestFeature = chooseBestFeature(DataSet)
+#print(bestFeature)
+
+myTree = createTree(DataSet, Labels)
+print(myTree)
